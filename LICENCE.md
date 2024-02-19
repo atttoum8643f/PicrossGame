@@ -2,16 +2,20 @@ MIT License
 
 Copyright (c) 2024 attoum8643f et [Nom collègue]
 
-Permission est accordée, gratuitement, à toute personne obtenant une copie de ce logiciel et des fichiers de documentation 
-associés (le "Logiciel"), de traiter le Logiciel sans restriction, y compris, sans s'y limiter, les droits d'utilisation, 
-de copie, de modification, de fusion, de publication, de distribution, de sous-licence et/ou de vente de copies du Logiciel, 
-et de permettre aux personnes à qui le Logiciel est fourni de le faire, sous réserve des conditions suivantes :
+L'autorisation est accordée gratuitement à toute personne obtenant une copie
+de ce logiciel et des fichiers de documentation associés (le « Logiciel »), pour traiter
+dans le Logiciel sans restriction, y compris, sans limitation, les droits
+utiliser, copier, modifier, fusionner, publier, distribuer, sous-licencier et/ou vendre
+copies du Logiciel, et pour permettre aux personnes à qui le Logiciel est
+fourni à cet effet, sous réserve des conditions suivantes :
 
-La mention du droit d'auteur ci-dessus et cette autorisation doivent être incluses dans toutes copies ou parties 
-substantielles du Logiciel.
+L'avis de droit d'auteur ci-dessus et cet avis d'autorisation doivent être inclus dans tous
+des copies ou des parties substantielles du Logiciel.
 
-LE LOGICIEL EST FOURNI "TEL QUEL", SANS GARANTIE D'AUCUNE SORTE, EXPRESSE OU IMPLICITE, Y COMPRIS, MAIS SANS S'Y LIMITER, 
-LES GARANTIES DE QUALITÉ MARCHANDE, D'ADAPTATION À UN USAGE PARTICULIER ET D'ABSENCE DE CONTREFAÇON. EN AUCUN CAS, 
-LES AUTEURS OU LES TITULAIRES DE DROITS D'AUTEUR NE SERONT RESPONSABLES DE TOUTE RÉCLAMATION, DOMMAGE OU AUTRE RESPONSABILITÉ, 
-QUE CE SOIT DANS UNE ACTION DE CONTRAT, TORT OU AUTRE, DÉCOULANT DE, HORS DE OU EN RELATION AVEC LE LOGICIEL OU L'UTILISATION 
-OU D'AUTRES TRANSACTIONS DANS LE LOGICIEL.
+LE LOGICIEL EST FOURNI « TEL QUEL », SANS GARANTIE D'AUCUNE SORTE, EXPRESSE OU
+IMPLICITES, Y COMPRIS MAIS SANS LIMITATION LES GARANTIES DE QUALITÉ MARCHANDE,
+APTITUDE À UN USAGE PARTICULIER ET NON-VIOLATION. EN AUCUN CAS LE
+LES AUTEURS OU TITULAIRES DES DROITS D'AUTEUR SONT RESPONSABLES DE TOUTE RÉCLAMATION, DOMMAGES OU AUTRES
+RESPONSABILITÉ, QUE CE SOIT DANS UNE ACTION CONTRACTUELLE, DÉLIT OU AUTRE, DÉCOULANT DE,
+EN RAISON OU EN RELATION AVEC LE LOGICIEL OU L'UTILISATION OU D'AUTRES TRANSACTIONS DANS LE
+LOGICIEL.
