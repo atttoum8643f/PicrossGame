@@ -1,0 +1,248 @@
+---
+title: "Picross Project"
+author: "Ibrahim8643f"
+date: "2024-02-17"
+output: html_document
+---
+
+```{r}
+# Installer shinyjs si ce n'est pas déjà installé
+if (!requireNamespace("shinyjs", quietly = TRUE)) {
+  install.packages("shinyjs")
+}
+
+library(shiny)
+library(shinyjs)
+library(shinythemes)
+
+# Fonction pour générer un puzzle Picross aléatoire
+generer_puzzle_picross <- function(taille) {
+  matrix(sample(c(0, 1), taille^2, replace = TRUE), nrow = taille, ncol = taille)
+}
+
+# Interface utilisateur Shiny
+ui <- fluidPage(
+  theme = shinytheme("superhero"),
+  titlePanel("Jeu Picross"),
+
+  # Utiliser shinyjs pour masquer les boutons lorsque la grille n'est pas sélectionnée
+  shinyjs::useShinyjs(),
+  shinyjs::extendShinyjs(text = "shinyjs.hide('barre_verification');", functions = c("hide_barre")),
+  sidebarLayout(
+    sidebarPanel(
+      sliderInput(
+        inputId = "taille_grille",
+        label = "Sélectionnez la taille de la grille Picross",
+        value = 5,
+        min = 5,
+        max = 15,
+        step = 5
+      )
+    ),
+
+    mainPanel(
+      tabsetPanel(
+        tabPanel(
+          title = "Jeu Picross", 
+          uiOutput("grille_picross"),  # Affichage de la grille Picross à la place du nuage de points
+          uiOutput("barre_verification")  # Affichage de la barre de vérification
+        ),
+        tabPanel(
+          title = "Règlement du Jeu",
+          textOutput("reglement_text")  # Affichage des détails du jeu
+        )
+      )
+    )
+  )
+)
+
+# Logique du serveur Shiny
+server <- function(input, output) {
+  observe({
+    print(input$taille_grille)
+  })
+
+  # Générer un puzzle Picross aléatoire
+  picross <- reactive({
+    generer_puzzle_picross(input$taille_grille)  # Utilisez la taille sélectionnée
+  })
+
+  # Afficher la grille Picross avec des boutons
+  output$grille_picross <- renderUI({
+    afficher_grille_picross(picross())
+  })
+
+  # Afficher les détails du jeu
+  output$reglement_text <- renderText({
+    "Bienvenue dans le jeu Picross!\n\nRèglement:\n1. Remplissez les cellules pour révéler l'image cachée.\n2. Les nombres sur les côtés indiquent le nombre de cases consécutives à remplir sur chaque ligne et colonne.\n3. Cliquez une fois pour remplir une cellule, deux fois pour marquer avec un X, et à nouveau pour revenir à l'état initial."
+  })
+
+  # Afficher la barre de vérification
+  output$barre_verification <- renderUI({
+    afficher_barre_verification()
+  })
+
+  # Masquer la barre de vérification au début
+  observe({
+    shinyjs::runjs("shinyjs.hide('barre_verification');")
+  })
+
+  # Montrer la barre de vérification lorsque la grille est prête
+  observe({
+    if (!is.null(picross())) {
+      shinyjs::runjs("shinyjs.show('barre_verification');")
+    }
+  })
+
+  # Activer le mode "Noir"
+  observeEvent(input$btn_noir, {
+    shinyjs::runjs("
+      var modeNoir = true;
+      $('.cellulePicross').click(function() {
+        if (modeNoir) {
+          $(this).css('background-color', 'black');
+          // Réinitialiser l'icône de croix rouge si elle existe
+          $(this).html('');
+        }
+      });
+    ")
+  })
+
+  # Activer le mode "Croix Rouge"
+  observeEvent(input$btn_croix_rouge, {
+    shinyjs::runjs("
+      var modeCroixRouge = true;
+      $('.cellulePicross').click(function() {
+        if (modeCroixRouge) {
+          $(this).css('background-color', 'white');  // Couleur de fond blanc pour simuler une croix rouge
+          $(this).html('<i class=\"fas fa-times\" style=\"color: red;\"></i>');  // Ajouter une icône de croix rouge
+        }
+      });
+    ")
+  })
+}
+
+# Fonction pour afficher la grille Picross avec des boutons et une barre de vérification
+afficher_grille_picross <- function(picross) {
+  taille <- nrow(picross)
+
+  # Affichage de la grille Picross avec des boutons
+  divs_grille <- list(
+    tags$div(style = "font-weight: bold; text-align: center;", "Grille Picross"),
+    tags$div(
+      id = "grillePicross",
+      style = paste0(
+        "display: grid; grid-template-columns: repeat(", taille, ", 30px);",
+        "grid-gap: 5px;"  # Ajout d'un espacement entre les cellules
+      )
+    )
+  )
+
+  for (ligne in 1:taille) {
+    for (colonne in 1:taille) {
+      valeur <- picross[ligne, colonne]
+
+      class_name <- ifelse(valeur == 0, "celluleVide", "celluleRemplie")
+
+      divs_grille[[2]] <- tagAppendChild(
+        divs_grille[[2]],
+        actionButton(
+          inputId = paste0("btn_", ligne, "_", colonne),
+          label = "",
+          class = paste("cellulePicross", class_name),
+          style = "border: 1px solid #000; padding: 5px; text-align: center; width: 30px; height: 30px;"  # Ajustement de la taille des cellules
+        )
+      )
+    }
+  }
+
+  # Concaténation des deux parties
+  do.call(tagList, divs_grille)
+}
+
+# Fonction pour afficher la barre de vérification
+afficher_barre_verification <- function() {
+  divs_barre <- list(
+    tags$div(
+      style = "display: flex; margin-top: 20px;",
+      actionButton(
+        inputId = "btn_noir",
+        label = "Noir",
+        style = "width: 70px; background-color: black; color: white; margin-right: 5px;"
+      ),
+      actionButton(
+        inputId = "btn_croix_rouge",
+        label = icon("times", class = "fa-2x"),
+        style = "width: 60px; background-color: white; color: red; border: 1px solid red; margin-right: 5px;"
+      ),
+      actionButton(
+        inputId = "btn_verification",
+        label = "Vérification",
+        style = "width: 100px; background-color: green; color: white;"
+      )
+    )
+  )
+
+  do.call(tagList, divs_barre)
+}
+
+# Lancer l'application Shiny
+shinyApp(ui, server)
+
+```
+
+
+```{r}
+set.seed(123)
+# Matrice de taille 5*5
+A1 = matrix(sample(c(0, 1), 5^2, replace = TRUE), nrow = 5, ncol = 5)
+A2 = matrix(sample(c(0, 1), 5^2, replace = TRUE), nrow = 5, ncol = 5)
+A3 = matrix(sample(c(0, 1), 5^2, replace = TRUE), nrow = 5, ncol = 5)
+
+# la liste contenant les matrice de taille 5*5
+l1 = list(A1,A2,A3)
+
+# Matrice de taille 10*10
+B1 = matrix(sample(c(0, 1), 10^2, replace = TRUE), nrow = 10, ncol = 10)
+B2 = matrix(sample(c(0, 1), 10^2, replace = TRUE), nrow = 10, ncol = 10)
+B3 = matrix(sample(c(0, 1), 10^2, replace = TRUE), nrow = 10, ncol = 10)
+
+# la liste contenant les matrice de taille 10*10
+l2 = list(B1,B2,B3)
+
+# Matrice de taille 15*15
+C1 = matrix(sample(c(0, 1), 15^2, replace = TRUE), nrow = 15, ncol = 15)
+C2 = matrix(sample(c(0, 1), 15^2, replace = TRUE), nrow = 15, ncol = 15)
+C3 = matrix(sample(c(0, 1), 15^2, replace = TRUE), nrow = 15, ncol = 15)
+
+# la liste contenant les matrice de taille 15*15
+l3 = list(C1,C2,C3)
+
+L = list(l1, l2, l3)
+
+gener_puzzle <- function(taille) {
+  # Liste des tailles disponibles
+  tailles_disponibles <- c(5, 10, 15)
+  
+  # Recherche de la taille correspondante
+  for (i in tailles_disponibles) {
+    if (taille == i) {
+      # Index de la taille
+      index_taille <- match(i, tailles_disponibles)
+      
+      # Récupération de la liste correspondante
+      liste_correspondante <- L[[index_taille]]
+      
+      # Sélection aléatoire d'une matrice dans la liste
+      matrice_selectionnee <- sample(liste_correspondante, 1)[[1]]
+      
+      return(matrice_selectionnee)
+    }
+  }
+  
+  # Si la taille n'est pas trouvée parmi les tailles disponibles
+  print("Taille non disponible.")
+  return(NULL)
+}
+
+```
