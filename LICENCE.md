@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2024 attoum8643f et [Nom collègue]
+Copyright (c) 2024 attoum8643f et Kenewy Kenewy.
 
 L'autorisation est accordée gratuitement à toute personne obtenant une copie
 de ce logiciel et des fichiers de documentation associés (le « Logiciel »), pour traiter
