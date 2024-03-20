@@ -22,7 +22,3 @@ jobs:
       - name: Installation des packages
         run: |
           Rscript install.R   
-      
-      # Étape 4 : Déploiement de l'application Shiny sur Shinyapps.io
-      - name: Déploiement du jeu Picross
-        run: Rscript -e "rsconnect::deployApp(appDir = '.', token = '${{ secrets.SHINYAPPSIO_TOKEN }}')"
