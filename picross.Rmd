@@ -1,7 +1,3 @@
----
-title: "Picross Project"
-output: html_document
----
 
 ```{r}
 # Installer shinyjs si ce n'est pas déjà installé
