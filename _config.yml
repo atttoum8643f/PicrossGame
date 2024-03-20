@@ -1,0 +1,22 @@
+project:
+  type: website
+  render:
+    - index.qmd
+
+website:
+  back-to-top-navigation: true
+  page-navigation: true
+  title: "Myte_project"
+  site-url: https://bossdidiboss.github.io/myte_project/
+  repo-url: https://github.com/BossdiDiboss/myte_project
+  repo-actions: [source,issue]
+  navbar:
+    title: "Mayotte"
+    background: darkgreen
+    search: true
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
