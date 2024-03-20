@@ -18,11 +18,11 @@ jobs:
       - name: Setup R
         uses: r-lib/actions/setup-r@v1
       
-      # Étape 3 : Installation du package rsconnect
-      - name: Install rsconnect
+      # Étape 3 : Exécution du script R pour l'installation des packages
+      - name: Installation des packages
         run: |
-          R -e "install.packages('rsconnect', repos='https://cloud.r-project.org/')"
+          Rscript install.R   
       
       # Étape 4 : Déploiement de l'application Shiny sur Shinyapps.io
       - name: Déploiement du jeu Picross
-        run: Rscript -e "rsconnect::deployApp(appDir = '.', account = 'myAccount', token = '${{ secrets.RS_CONNECT_TOKEN }}')"
+        run: Rscript -e "rsconnect::deployApp(appDir = '.', token = '${{ secrets.SHINYAPPSIO_TOKEN }}')"
