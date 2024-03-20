@@ -1,0 +1,28 @@
+name: Deployment du jeu Picross
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: windows-latest  # Utilise Windows comme système d'exploitation pour l'exécution
+    
+    steps:
+      # Étape 1 : Récupérer le dépôt GitHub
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      
+      # Étape 2 : Configuration de R
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v1
+      
+      # Étape 3 : Installation du package rsconnect
+      - name: Install rsconnect
+        run: |
+          R -e "install.packages('rsconnect', repos='https://cloud.r-project.org/')"
+      
+      # Étape 4 : Déploiement de l'application Shiny sur Shinyapps.io
+      - name: Déploiement du jeu Picross
+        run: Rscript -e "rsconnect::deployApp(appDir = '.', account = 'myAccount', token = '${{ secrets.RS_CONNECT_TOKEN }}')"
