@@ -14,7 +14,7 @@ a quelque chose pour tout le monde.
 ## Présentation du jeu Picross
 Picross, également connu sous le nom de Nonogram, est un jeu de réflexion logique dans lequel les joueurs dévoilent une image 
 cachée en remplissant les cellules d'une grille. Des indices sur les côtés de la grille indiquent les blocs consécutifs à remplir 
-dans chaque ligne et colonne.
+dans chaque ligne et colonne. Pour plus d'informations, veuillez [cliquer ici](https://fr.wikipedia.org/wiki/Picross#).
 
 ## Fonctionnalités d'application brillantes
 Notre application Shiny est conçue pour offrir une expérience de jeu Picross agréable :
