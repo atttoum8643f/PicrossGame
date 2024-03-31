@@ -1,16 +1,25 @@
-# test_afficher_barre_verification.R
-# source("C:\\Users\\BossdiDibosS\\Desktop\\MASTER1\\semestre 2\\Programmation R\\shiny\\test_picross\\picfen\\R\\afficher_grille_picross.R")
+# Charger le package testthat
+library(testthat)
 
-# Test pour la fonction afficher_barre_verification
-test_that("Test de la fonction afficher_barre_verification", {
-  # Appeler la fonction afficher_barre_verification
-  ui <- afficher_barre_verification()
+# Définir les tests uniquement si le package testthat est disponible
+if (requireNamespace("testthat", quietly = TRUE)) {
+  # Test pour la fonction afficher_barre_verification
+  test_that("Test de la fonction afficher_barre_verification", {
+    # Créer un contexte de test
+    context("Affichage de la barre de vérification")
+    {
+      # Appeler la fonction afficher_barre_verification
+      ui <- pixelpic::afficher_barre_verification()
 
-  # Vérifier si le résultat est bien une interface utilisateur Shiny
-  expect_is(ui, "shiny.tag.list")
+      # Vérifier si le résultat est bien une interface utilisateur Shiny
+      expect_is(ui, "shiny.tag.list")
 
-  # Vérifier si la barre de vérification a été affichée correctement
-  # Ici, nous vérifions juste le nombre d'éléments dans la liste des tags,
-  # vous pouvez également vérifier d'autres attributs comme le style, les étiquettes, etc.
-  expect_length(ui, 1)
-})
+      # Vérifier si la barre de vérification a été affichée correctement
+      # Ici, nous vérifions juste le nombre d'éléments dans la liste des tags,
+      # vous pouvez également vérifier d'autres attributs comme le style, les étiquettes, etc.
+      expect_length(ui, 1)
+    }
+  })
+} else {
+  message("Le package testthat n'est pas installé. Les tests ne seront pas exécutés.")
+}

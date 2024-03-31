@@ -10,5 +10,5 @@ afficher_reglement_text()
 Les détails du jeu en texte
 }
 \description{
-Afficher les détails du jeu
+Cette fonction génère les détails du jeu Picross en texte.
 }

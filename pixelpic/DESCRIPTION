@@ -1,12 +1,15 @@
 Package: pixelpic
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Title: Jeu Picross - Package R
+Version: 1.0.0
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+    person("Ibrahim","Attoumani", email = "ibrahim.attoumani6@gmail.com", role = c("aut", "cre"))
+    person("Khadidiatou","Kenewy", email = "kenewy2003@gmail.com", role = c("aut", "cre"))
+Description: Ce package R fournit des fonctionnalités pour jouer au jeu Picross, également connu sous le nom de nonogrammes. Il inclut la génération de puzzles, l'affichage de la grille, la vérification des réponses et bien plus encore.
+License: MIT
 Encoding: UTF-8
+Imports:
+    shiny,
+    shinyjs,
+    shinythemes
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1

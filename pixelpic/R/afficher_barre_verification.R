@@ -22,12 +22,17 @@ afficher_barre_verification <- function() {
       actionButton(
         inputId = "btn_croix_rouge",
         label = icon("times", class = "fa-2x"),
-        style = "width: 60px; background-color: white; color: red; border: 1px solid red; margin-right: 5px;"
+        style = "width: 70px; background-color: white; color: red; border: 1px solid red; margin-right: 5px;"
       ),
       actionButton(
         inputId = "btn_verification",
         label = "Vérification",
-        style = "width: 100px; background-color: green; color: white;"
+        style = "width: 100px; background-color: green; color: white;margin-right: 5px;"
+      ),
+      actionButton(
+        inputId = "btn_solution",
+        label = "Solution",
+        style = "width: 100px; background-color: orange; color: white;"
       )
     )
   )

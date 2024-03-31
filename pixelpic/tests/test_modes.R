@@ -1,3 +1,4 @@
+# Charger le package testthat
 library(testthat)
 
 # Mock des fonctions pour vérifier si elles sont appelées
@@ -14,7 +15,7 @@ test_that("Test des fonctions pour activer les modes", {
   # Appeler les fonctions pour activer les modes
   activer_mode_noir()
   activer_mode_croix_rouge()
-  
+
   # Vérifier si les fonctions ont été appelées
   expect_true(get("mode_noir_called", envir = globalenv()))
   expect_true(get("mode_croix_rouge_called", envir = globalenv()))

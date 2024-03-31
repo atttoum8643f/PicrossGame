@@ -18,7 +18,12 @@
 #' @export
 #'
 afficher_grille_picross <- function(picross) {
-  taille <- nrow(picross)
+  nb_lignes <- nrow(picross)
+  nb_colonnes <- ncol(picross)
+
+  # Récupérer les indices des lignes et des colonnes
+  indices_lignes <- sapply(1:nb_lignes, function(i) calculer_indices(picross[i, ]))
+  indices_colonnes <- sapply(1:nb_colonnes, function(j) calculer_indices(picross[, j]))
 
   # Ajout d'étiquettes pour les indices numériques des lignes
   divs_grille <- list(
@@ -26,7 +31,7 @@ afficher_grille_picross <- function(picross) {
     tags$div(
       id = "grillePicross",
       style = paste0(
-        "display: grid; grid-template-columns: repeat(", taille + 1, ", 30px);",
+        "display: grid; grid-template-columns: repeat(", nb_colonnes + 1, ", 30px);",
         "grid-gap: 5px;"  # Ajout d'un espacement entre les cellules
       )
     )
@@ -39,25 +44,33 @@ afficher_grille_picross <- function(picross) {
   )
 
   # Ajouter les indices numériques pour les colonnes
-  for (colonne in 1:taille) {
+  for (colonne in 1:nb_colonnes) {
+    indices <- indices_colonnes[[colonne]]
+    indices_texte <- ifelse(length(indices) == 0, "", paste(indices, collapse = "\n"))
+
     divs_grille[[2]] <- tagAppendChild(
       divs_grille[[2]],
-      tags$div(style = "text-align: center; white-space: nowrap;",
-               ifelse(length(which(diff(picross[,colonne]) == 1)) == 0, "", paste0(length(which(diff(picross[,colonne]) == 1)), collapse = "\u00A0"))
+      tags$div(
+        style = "text-align: center; white-space: pre-line;",
+        indices_texte
       )
     )
   }
 
-  for (ligne in 1:taille) {
+  for (ligne in 1:nb_lignes) {
     # Ajouter l'indice numérique pour la ligne
+    indices <- indices_lignes[[ligne]]
+    indices_texte <- ifelse(length(indices) == 0, "", paste(indices, collapse = " "))
+
     divs_grille[[2]] <- tagAppendChild(
       divs_grille[[2]],
-      tags$div(style = "text-align: center; white-space: nowrap;",
-               ifelse(length(which(diff(picross[ligne,]) == 1)) == 0, "", paste0(length(which(diff(picross[ligne,]) == 1)), collapse = "\u00A0"))
+      tags$div(
+        style = "text-align: center; white-space: nowrap;",
+        indices_texte
       )
     )
 
-    for (colonne in 1:taille) {
+    for (colonne in 1:nb_colonnes) {
       valeur <- picross[ligne, colonne]
 
       class_name <- ifelse(valeur == 0, "celluleVide", "celluleRemplie")

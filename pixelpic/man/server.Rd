@@ -14,12 +14,20 @@
 
 "barre_verification_actions.R"
 
-"modes.R"
-
 "verifier_grille.R"
+
+"afficher_solution.R"
+
+"activer_modes.R"
+
+"matrices_10.R"
+
+"matrices_5.R"
+
+"calculer_indices.R"
 }
 \usage{
-server(input, output)
+server(input, output, session)
 }
 \description{
 Ce script définit la logique du serveur Shiny pour l'application Picross. Il charge
