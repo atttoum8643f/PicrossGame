@@ -1,7 +1,7 @@
 # Projet Picross
 Bienvenue dans le projet Picross ! Ce projet vise à donner vie au jeu classique de Picross grâce à une application 
 Shiny interactive et une bibliothèque R robuste. Que vous soyez passionné de Picross ou nouveau dans le jeu, ce projet
-a quelque chose pour tout le monde. On peut retrouver l'application [ici](https://ibrahbossdi.shinyapps.io/picross/)
+a quelque chose pour tout le monde. 
 
 ## Objectifs du projet
    - **Développement de bibliothèque R :** créez une bibliothèque R qui constitue l'épine dorsale de notre application Shiny.
@@ -29,4 +29,5 @@ Notre application Shiny est conçue pour offrir une expérience de jeu Picross a
 
 **Divers niveaux de puzzle :** profitez de puzzles de différents niveaux de difficulté, destinés aussi bien aux débutants qu'aux professionnels du Picross.
 
-
+## Lien vers l'application
+On peut retrouver l'application [ici](https://kenewy03ibrah.shinyapps.io/picross/).
