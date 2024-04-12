@@ -1,0 +1,314 @@
+---
+title: "Picross Project"
+output: html_document
+---
+
+```{r}
+# Installer shinyjs si ce n'est pas déjà installé
+if (!requireNamespace("shinyjs", quietly = TRUE)) {
+  install.packages("shinyjs")
+}
+
+library(shiny)
+library(shinyjs)
+library(shinythemes)
+
+# Fonction pour générer un puzzle Picross aléatoire
+generer_puzzle_picross <- function(nb_lignes, nb_colonnes) {
+  matrix(sample(c(0, 1), nb_lignes * nb_colonnes, replace = TRUE), nrow = nb_lignes, ncol = nb_colonnes)
+}
+
+# Fonction pour afficher la grille Picross avec des boutons et une barre de vérification
+afficher_grille_picross <- function(picross) {
+  nb_lignes <- nrow(picross)
+  nb_colonnes <- ncol(picross)
+  
+  # Récupérer les indices des lignes et des colonnes
+  indices_lignes <- sapply(1:nb_lignes, function(i) calculer_indices(picross[i, ]))
+  indices_colonnes <- sapply(1:nb_colonnes, function(j) calculer_indices(picross[, j]))
+  
+  # Ajout d'étiquettes pour les indices numériques des lignes
+  divs_grille <- list(
+    tags$div(style = "font-weight: bold; text-align: center;", "Grille Picross"),
+    tags$div(
+      id = "grillePicross",
+      style = paste0(
+        "display: grid; grid-template-columns: repeat(", nb_colonnes + 1, ", 30px);",
+        "grid-gap: 5px;"  # Ajout d'un espacement entre les cellules
+      )
+    )
+  )
+  
+  # Ajouter une ligne vide pour les indices numériques en haut
+  divs_grille[[2]] <- tagAppendChild(
+    divs_grille[[2]],
+    tags$div(style = "width: 30px;")
+  )
+  
+  # Ajouter les indices numériques pour les colonnes
+  for (colonne in 1:nb_colonnes) {
+    indices <- indices_colonnes[[colonne]]
+    indices_texte <- ifelse(length(indices) == 0, "", paste(indices, collapse = "\n"))
+    
+    divs_grille[[2]] <- tagAppendChild(
+      divs_grille[[2]],
+      tags$div(
+        style = "text-align: center; white-space: pre-line;",
+        indices_texte
+      )
+    )
+  }
+  
+  for (ligne in 1:nb_lignes) {
+    # Ajouter l'indice numérique pour la ligne
+    indices <- indices_lignes[[ligne]]
+    indices_texte <- ifelse(length(indices) == 0, "", paste(indices, collapse = " "))
+    
+    divs_grille[[2]] <- tagAppendChild(
+      divs_grille[[2]],
+      tags$div(
+        style = "text-align: center; white-space: nowrap;",
+        indices_texte
+      )
+    )
+    
+    for (colonne in 1:nb_colonnes) {
+      valeur <- picross[ligne, colonne]
+      
+      class_name <- ifelse(valeur == 0, "celluleVide", "celluleRemplie")
+      
+      divs_grille[[2]] <- tagAppendChild(
+        divs_grille[[2]],
+        actionButton(
+          inputId = paste0("btn_", ligne, "_", colonne),
+          label = "",
+          class = paste("cellulePicross", class_name),
+          style = "border: 1px solid #000; padding: 5px; text-align: center; width: 30px; height: 30px;"  # Ajustement de la taille des cellules
+        )
+      )
+    }
+  }
+  
+  # Concaténation des deux parties
+  do.call(tagList, divs_grille)
+}
+
+# Fonction pour calculer les indices d'une ligne ou colonne
+calculer_indices <- function(vec) {
+  runs <- rle(vec)
+  runs$values[runs$values == 0] <- NA  # Remplacer les valeurs de 0 par NA pour simplifier les calculs
+  
+  indices <- runs$lengths[runs$values == 1]
+  indices[!is.na(indices)]
+}
+
+# Interface utilisateur Shiny
+ui <- fluidPage(
+  theme = shinytheme("superhero"),
+  titlePanel("Jeu Picross"),
+  
+  # Utiliser shinyjs pour masquer les boutons lorsque la grille n'est pas sélectionnée
+  shinyjs::useShinyjs(),
+  shinyjs::extendShinyjs(text = "shinyjs.hide('barre_verification');", functions = c("hide_barre")),
+  sidebarLayout(
+    sidebarPanel(
+      sliderInput(
+        inputId = "nb_lignes",
+        label = "Nombre de lignes",
+        value = 5,
+        min = 5,
+        max = 15,
+        step = 1
+      ),
+      sliderInput(
+        inputId = "nb_colonnes",
+        label = "Nombre de colonnes",
+        value = 5,
+        min = 5,
+        max = 15,
+        step = 1
+      ),
+      actionButton(inputId = "btn_recharger", label = "Recharger la grille", style = "width: 100%; margin-top: 10px;")
+    ),
+    
+    mainPanel(
+      tabsetPanel(
+        tabPanel(
+          title = "Jeu Picross", 
+          uiOutput("grille_picross"),  # Affichage de la grille Picross à la place du nuage de points
+          uiOutput("barre_verification")  # Affichage de la barre de vérification
+        ),
+        tabPanel(
+          title = "Règlement du Jeu",
+          textOutput("reglement_text")  # Affichage des détails du jeu
+        )
+      )
+    )
+  )
+)
+
+# Logique du serveur Shiny
+server <- function(input, output) {
+  # Générer un puzzle Picross aléatoire
+  picross <- reactive({
+    generer_puzzle_picross(input$nb_lignes, input$nb_colonnes)
+  })
+  
+  # Solution du puzzle Picross
+  solution <- reactiveVal(NULL)
+  
+  # Stocker la grille générée pour afficher la solution
+  observeEvent(input$btn_solution, {
+    solution(picross())
+  })
+  
+  # Afficher la grille Picross avec des boutons
+  output$grille_picross <- renderUI({
+    afficher_grille_picross(picross())
+  })
+  
+  # Afficher les détails du jeu
+  output$reglement_text <- renderText({
+    "Le but consiste à retrouver les cases noires dans chaque grille. Les chiffres donnés sur le côté et en haut de la grille vous donnent des indices. Ils indiquent la taille des blocs de cases noires de la ligne ou de la colonne sur laquelle ils se trouvent.
+
+Par exemple 3,4 à gauche d'une ligne indique qu'il y a, de gauche à droite, un bloc de 3 cases noires puis un bloc de 4 cases noires sur cette ligne.
+
+En revanche, ce qui n'est pas mentionné et qui fait la difficulté, est le nombre de cases blanches entre les cases noires. On sait simplement qu'il y en a au moins une.
+
+Généralement, une grille résolue fait découvrir un dessin."
+  })
+  
+  # Afficher la barre de vérification
+  output$barre_verification <- renderUI({
+    afficher_barre_verification()
+  })
+  
+  # Masquer la barre de vérification au début
+  observe({
+    shinyjs::runjs("shinyjs.hide('barre_verification');")
+  })
+  
+  # Montrer la barre de vérification lorsque la grille est prête
+  observe({
+    if (!is.null(picross())) {
+      shinyjs::runjs("shinyjs.show('barre_verification');")
+    }
+  })
+  
+  # Activer le mode "Noir"
+  observeEvent(input$btn_noir, {
+    shinyjs::runjs("
+      var modeNoir = true;
+      $('.cellulePicross').click(function() {
+        if (modeNoir) {
+          $(this).css('background-color', 'black');
+          // Réinitialiser l'icône de croix rouge si elle existe
+          $(this).html('');
+        }
+      });
+    ")
+  })
+  
+  # Activer le mode "Croix Rouge"
+  observeEvent(input$btn_croix_rouge, {
+    shinyjs::runjs("
+      var modeCroixRouge = true;
+      $('.cellulePicross').click(function() {
+        if (modeCroixRouge) {
+          $(this).css('background-color', 'white');  // Couleur de fond blanc pour simuler une croix rouge
+          $(this).html('<i class=\"fas fa-times\" style=\"color: red;\"></i>');  // Ajouter une icône de croix rouge
+        }
+      });
+    ")
+  })
+  
+  # Activer le mode "Vérification"
+  observeEvent(input$btn_verification, {
+    grille_joueur <- matrix(0, nrow = input$nb_lignes, ncol = input$nb_colonnes)
+    grille_solution <- picross()  # Récupérer la solution
+    
+    for (ligne in 1:input$nb_lignes) {
+      for (colonne in 1:input$nb_colonnes) {
+        id_bouton <- paste0("btn_", ligne, "_", colonne)
+        valeur_bouton <- input[[id_bouton]]
+        
+        # Marquer la case du joueur comme remplie si le bouton a été cliqué et que c'est une case noire
+        if (valeur_bouton > 0 && grille_solution[ligne, colonne] == 1) {
+          grille_joueur[ligne, colonne] <- 1
+        }
+      }
+    }
+    
+    # Vérifier si la grille du joueur correspond à la solution attendue
+    if (identical(grille_joueur, grille_solution)) {
+      showModal(modalDialog(
+        title = "Bravo!",
+        "Félicitations, vous avez réussi l'énigme!"
+      ))
+    } else {
+      showModal(modalDialog(
+        title = "Dommage!",
+        "La grille ne correspond pas à la solution. Veuillez réessayer."
+      ))
+    }
+  })
+  
+  # Afficher la solution
+  observeEvent(input$btn_solution, {
+    if (!is.null(solution())) {
+      for (ligne in 1:input$nb_lignes) {
+        for (colonne in 1:input$nb_colonnes) {
+          id_bouton <- paste0("btn_", ligne, "_", colonne)
+          if (solution()[ligne, colonne] == 1) {
+            shinyjs::runjs(sprintf("document.getElementById('%s').style.backgroundColor = 'darkgreen';", id_bouton))
+          }
+        }
+      }
+    }
+  })
+  
+  # Recharger la grille
+  observeEvent(input$btn_recharger, {
+    # Masquer la barre de vérification
+    shinyjs::runjs("shinyjs.hide('barre_verification');")
+    # Générer une nouvelle grille
+    solution(NULL)  # Réinitialiser la solution
+  })
+  
+}
+
+# Fonction pour afficher la barre de vérification
+afficher_barre_verification <- function() {
+  divs_barre <- list(
+    tags$div(
+      style = "display: flex; margin-top: 20px;",
+      actionButton(
+        inputId = "btn_noir",
+        label = "Noir",
+        style = "width: 70px; background-color: black; color: white; margin-right: 5px;"
+      ),
+      actionButton(
+        inputId = "btn_croix_rouge",
+        label = icon("times", class = "fa-2x"),
+        style = "width: 60px; background-color: white; color: red; border: 1px solid red; margin-right: 5px;"
+      ),
+      actionButton(
+        inputId = "btn_verification",
+        label = "Vérification",
+        style = "width: 100px; background-color: green; color: white;margin-right: 5px;"
+      ),
+      actionButton(
+        inputId = "btn_solution",
+        label = "Solution",
+        style = "width: 100px; background-color: orange; color: white;"
+      )
+    )
+  )
+  
+  do.call(tagList, divs_barre)
+}
+
+# Lancer l'application Shiny
+shinyApp(ui, server)
+
+```
